@@ -6,24 +6,25 @@ let highlightActive = false;
 const nodesDataset = new vis.DataSet(nodes);
 const edgesDataset = new vis.DataSet(edges);
 
-const selectedNodeColor = "#00adb5";
-const firstDegreeNodeColor = "#D2E5FF";
+const selectedNodeColor = "#9bff61";
+const firstDegreeNodeColor = {
+  border: "#2B7CE9",
+  background: "#D2E5FF"
+};
 const secondDegreeNodeColor = "#88a7fb9a";
 const otherNodeColor = "#414d5d7a";
 
 const nodesOption = {
-  color: {
-    background: firstDegreeNodeColor
-  },
+  color: firstDegreeNodeColor,
   shape: "dot",
   scaling: {
     min: 6,
     max: 160,
     label: {
       min: 8,
-      max: 30,
+      max: 70,
       drawThreshold: 12,
-      maxVisible: 20,
+      maxVisible: 50,
     },
   },
   font: {
@@ -68,7 +69,7 @@ const physicsOption = {
   }
 };
 
-function redrawAll() {
+const redrawAll = () => {
   const container = document.getElementById("network");
   const options = {
     nodes: nodesOption,
@@ -80,6 +81,9 @@ function redrawAll() {
   network = new vis.Network(container, data, options);
 
   allNodes = nodesDataset.get({ returnType: "Object" });
+
+  console.log(allNodes);
+
 
   network.on("click", neighbourhoodHighlight);
 }
@@ -94,8 +98,7 @@ const neighbourhoodHighlight = (params) => {
     const selectedNode = params.nodes[0];
     const degrees = 2;
 
-
-    for (const nodeId in allNodes) {
+    for (let nodeId in allNodes) {
       allNodes[nodeId].color = otherNodeColor;
       if (allNodes[nodeId].hiddenLabel === undefined) {
         allNodes[nodeId].hiddenLabel = allNodes[nodeId].label;
@@ -116,8 +119,7 @@ const neighbourhoodHighlight = (params) => {
     for (i = 0; i < allConnectedNodes.length; i++) {
       allNodes[allConnectedNodes[i]].color = secondDegreeNodeColor;
       if (allNodes[allConnectedNodes[i]].hiddenLabel !== undefined) {
-        allNodes[allConnectedNodes[i]].label =
-          allNodes[allConnectedNodes[i]].hiddenLabel;
+        allNodes[allConnectedNodes[i]].label =allNodes[allConnectedNodes[i]].hiddenLabel;
         allNodes[allConnectedNodes[i]].hiddenLabel = undefined;
       }
     }
@@ -125,8 +127,7 @@ const neighbourhoodHighlight = (params) => {
     for (i = 0; i < connectedNodes.length; i++) {
       allNodes[connectedNodes[i]].color = firstDegreeNodeColor;
       if (allNodes[connectedNodes[i]].hiddenLabel !== undefined) {
-        allNodes[connectedNodes[i]].label =
-          allNodes[connectedNodes[i]].hiddenLabel;
+        allNodes[connectedNodes[i]].label = allNodes[connectedNodes[i]].hiddenLabel;
         allNodes[connectedNodes[i]].hiddenLabel = undefined;
       }
     }
@@ -137,7 +138,7 @@ const neighbourhoodHighlight = (params) => {
       allNodes[selectedNode].hiddenLabel = undefined;
     }
   } else if (highlightActive === true) {
-    for (const nodeId in allNodes) {
+    for (let nodeId in allNodes) {
       allNodes[nodeId].color = firstDegreeNodeColor;
       if (allNodes[nodeId].hiddenLabel !== undefined) {
         allNodes[nodeId].label = allNodes[nodeId].hiddenLabel;
@@ -153,7 +154,6 @@ const neighbourhoodHighlight = (params) => {
       updateArray.push(allNodes[nodeId]);
     }
   }
-  console.log(updateArray);
   nodesDataset.update(updateArray);
 }
 
