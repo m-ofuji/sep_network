@@ -2,6 +2,9 @@
 let network;
 let allNodes;
 let highlightActive = false;
+let lastClickTime = new Date();
+const doubleClickThreshold = 1 * 1000;
+const baseUrl = "https://plato.stanford.edu/entries/";
 
 const nodesDataset = new vis.DataSet(nodes);
 const edgesDataset = new vis.DataSet(edges);
@@ -82,10 +85,18 @@ const redrawAll = () => {
 
   allNodes = nodesDataset.get({ returnType: "Object" });
 
-  console.log(allNodes);
+  network.on("click", onClicked);
+}
 
-
-  network.on("click", neighbourhoodHighlight);
+const onClicked = (params) => {
+  const before = lastClickTime;
+  lastClickTime = new Date();
+  var elapsedTime = lastClickTime.getTime() - before.getTime()
+  if (elapsedTime <= doubleClickThreshold) {
+    openLink(params);
+  } else {
+    neighbourhoodHighlight(params);
+  }
 }
 
 const neighbourhoodHighlight = (params) => {
@@ -155,6 +166,14 @@ const neighbourhoodHighlight = (params) => {
     }
   }
   nodesDataset.update(updateArray);
-}
+};
+
+const openLink = (params) => {
+  if (params.nodes.length > 0) {
+    const nodes = nodesDataset.get({ returnType: "Object" });
+    const selectedNode = params.nodes[0];
+    window.open(`${baseUrl}${nodes[selectedNode].url}`);
+  }
+};
 
 redrawAll();

@@ -14,7 +14,8 @@ EDGE_FILE_NAME = constants.EDGE_VISJS
 def make_node(entry):
     return { 
         "id": entry['id'],
-        "label": entry['title']
+        "label": entry['title'],
+        "url": entry['entry_url']
     }
 
 def make_edge(source, target):
@@ -63,8 +64,9 @@ def make_topology():
     common.write_json(nodes, OUTPUT_DIR, NODE_FILE_NAME)
     common.write_json(edges, OUTPUT_DIR, EDGE_FILE_NAME)
 
-# add_position_to_node()
-
-# add_value_to_node()
 
 make_topology()
+
+add_value_to_node()
+
+add_position_to_node()
