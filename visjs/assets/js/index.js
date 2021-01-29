@@ -6,8 +6,15 @@ let lastClickTime = new Date();
 const doubleClickThreshold = 1 * 1000;
 const baseUrl = "https://plato.stanford.edu/entries/";
 
-const nodesDataset = new vis.DataSet(nodes);
+const titledNodes = nodes.map(x => {
+  x.title = x.label;
+  return x;
+});
+
+const nodesDataset = new vis.DataSet(titledNodes);
 const edgesDataset = new vis.DataSet(edges);
+
+const labels = Object.assign({}, ...nodes.map((n) => ({[n.id]: n.label,})));
 
 const selectedNodeColor = "#9bff61";
 const firstDegreeNodeColor = {
@@ -78,6 +85,10 @@ const redrawAll = () => {
     nodes: nodesOption,
     edges: edgesOption,
     physics: false,
+    interaction: {
+      tooltipDelay: 200,
+      hideEdgesOnDrag: true,
+    }
   };
   const data = { nodes: nodesDataset, edges: edgesDataset }; // Note: data is coming from ./datasources/WorldCup2014.js
 
@@ -111,10 +122,7 @@ const neighbourhoodHighlight = (params) => {
 
     for (let nodeId in allNodes) {
       allNodes[nodeId].color = otherNodeColor;
-      if (allNodes[nodeId].hiddenLabel === undefined) {
-        allNodes[nodeId].hiddenLabel = allNodes[nodeId].label;
-        allNodes[nodeId].label = undefined;
-      }
+      allNodes[nodeId].label = ' ';
     }
     const connectedNodes = network.getConnectedNodes(selectedNode);
     let allConnectedNodes = [];
@@ -128,32 +136,25 @@ const neighbourhoodHighlight = (params) => {
     }
 
     for (i = 0; i < allConnectedNodes.length; i++) {
-      allNodes[allConnectedNodes[i]].color = secondDegreeNodeColor;
-      if (allNodes[allConnectedNodes[i]].hiddenLabel !== undefined) {
-        allNodes[allConnectedNodes[i]].label =allNodes[allConnectedNodes[i]].hiddenLabel;
-        allNodes[allConnectedNodes[i]].hiddenLabel = undefined;
-      }
+      const index = allConnectedNodes[i];
+      allNodes[index].color = secondDegreeNodeColor;
+      allNodes[index].label = labels[index];
     }
 
     for (i = 0; i < connectedNodes.length; i++) {
-      allNodes[connectedNodes[i]].color = firstDegreeNodeColor;
-      if (allNodes[connectedNodes[i]].hiddenLabel !== undefined) {
-        allNodes[connectedNodes[i]].label = allNodes[connectedNodes[i]].hiddenLabel;
-        allNodes[connectedNodes[i]].hiddenLabel = undefined;
-      }
+      const index = connectedNodes[i];
+      allNodes[index].color = firstDegreeNodeColor;
+      allNodes[index].label = labels[index];
     }
 
     allNodes[selectedNode].color = selectedNodeColor;
-    if (allNodes[selectedNode].hiddenLabel !== undefined) {
-      allNodes[selectedNode].label = allNodes[selectedNode].hiddenLabel;
-      allNodes[selectedNode].hiddenLabel = undefined;
-    }
+    allNodes[selectedNode].label = labels[selectedNode];
   } else if (highlightActive === true) {
     for (let nodeId in allNodes) {
       allNodes[nodeId].color = firstDegreeNodeColor;
-      if (allNodes[nodeId].hiddenLabel !== undefined) {
+      if (allNodes[nodeId].hiddenLabel !== '') {
         allNodes[nodeId].label = allNodes[nodeId].hiddenLabel;
-        allNodes[nodeId].hiddenLabel = undefined;
+        allNodes[nodeId].hiddenLabel = '';
       }
     }
     highlightActive = false;
