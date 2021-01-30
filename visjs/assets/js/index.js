@@ -6,12 +6,7 @@ let lastClickTime = new Date();
 const doubleClickThreshold = 1 * 1000;
 const baseUrl = "https://plato.stanford.edu/entries/";
 
-const titledNodes = nodes.map(x => {
-  x.title = x.label;
-  return x;
-});
-
-const nodesDataset = new vis.DataSet(titledNodes);
+const nodesDataset = new vis.DataSet(nodes);
 const edgesDataset = new vis.DataSet(edges);
 
 const labels = Object.assign({}, ...nodes.map((n) => ({[n.id]: n.label,})));
@@ -153,8 +148,7 @@ const neighbourhoodHighlight = (params) => {
     for (let nodeId in allNodes) {
       allNodes[nodeId].color = firstDegreeNodeColor;
       if (allNodes[nodeId].hiddenLabel !== '') {
-        allNodes[nodeId].label = allNodes[nodeId].hiddenLabel;
-        allNodes[nodeId].hiddenLabel = '';
+        allNodes[nodeId].label = labels[nodeId];
       }
     }
     highlightActive = false;

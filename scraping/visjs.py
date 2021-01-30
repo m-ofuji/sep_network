@@ -15,7 +15,8 @@ def make_node(entry):
     return { 
         "id": entry['id'],
         "label": entry['title'],
-        "url": entry['entry_url']
+        "url": entry['entry_url'],
+        "title": entry['title']
     }
 
 def make_edge(source, target):
@@ -25,11 +26,11 @@ def make_edge(source, target):
         "arrows": "to"
     }
 
-def make_edges(source, entries):
+def make_edges(target, entries):
     linked_nodes = []
     for e in entries:
-        if (source['entry_url'] in e['links']):
-            edge = make_edge(source['id'], e['id'])
+        if (target['entry_url'] in e['links']):
+            edge = make_edge(e['id'], target['id'])
             linked_nodes.append(edge)
     return linked_nodes
 
