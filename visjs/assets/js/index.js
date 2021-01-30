@@ -147,9 +147,7 @@ const neighbourhoodHighlight = (params) => {
   } else if (highlightActive === true) {
     for (let nodeId in allNodes) {
       allNodes[nodeId].color = firstDegreeNodeColor;
-      if (allNodes[nodeId].hiddenLabel !== '') {
-        allNodes[nodeId].label = labels[nodeId];
-      }
+      allNodes[nodeId].label = labels[nodeId];
     }
     highlightActive = false;
   }
