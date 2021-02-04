@@ -2,15 +2,16 @@
   <head>
     <title>SEP NETWORK</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css" rel="stylesheet">
-    <style type="text/css">
-      html { height:100%;}
-      body {height: 100%;}
-      #network { width:100%; height:100%; background-color:#222831 }
-    </style>
+    <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./assets/css/app.css"/>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis-network.min.js"></script>
   </head>
   <body>
     <div id="network"></div>
+    <div id="search_container">
+      <input id="search-text" type="text" size="25" placeholder="Search Entries">
+      <input id="search-button" type="submit" value="&#xf002">
+    </div>
     <script type="text/javascript" src="./assets/js/nodes_visjs.js"></script>
     <script type="text/javascript" src="./assets/js/edges_visjs.js"></script>
     <script type="text/javascript" src="./assets/js/index.js"></script>

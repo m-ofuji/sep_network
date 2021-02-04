@@ -85,19 +85,20 @@ const redrawAll = () => {
       hideEdgesOnDrag: true,
     }
   };
-  const data = { nodes: nodesDataset, edges: edgesDataset }; // Note: data is coming from ./datasources/WorldCup2014.js
+  const data = { nodes: nodesDataset, edges: edgesDataset };
 
   network = new vis.Network(container, data, options);
 
   allNodes = nodesDataset.get({ returnType: "Object" });
 
-  network.on("click", onClicked);
+  network.on("click", onNetworkClicked);
 }
 
-const onClicked = (params) => {
+const onNetworkClicked = (params) => {
+  document.getElementById("search-text").value = "";
   const before = lastClickTime;
   lastClickTime = new Date();
-  var elapsedTime = lastClickTime.getTime() - before.getTime()
+  const elapsedTime = lastClickTime.getTime() - before.getTime()
   if (elapsedTime <= doubleClickThreshold) {
     openLink(params);
   } else {
@@ -105,20 +106,41 @@ const onClicked = (params) => {
   }
 }
 
+const changeNodesObjectColor = (nodes, color, labels) => {
+  for (let nodeId in nodes) {
+    nodes[nodeId].color = color;
+    nodes[nodeId].label = labels ? labels[nodeId] : " ";
+  }
+}
+
+const changeNodeColor = (nodes, color) => {
+  for (i = 0; i < nodes.length; i++) {
+    const index = nodes[i];
+    allNodes[index].color = color;
+    allNodes[index].label = labels[index];
+  }
+}
+
+const redrawNodes = (nodes) => {
+  const updateArray = [];
+  for (nodeId in nodes) {
+    if (nodes.hasOwnProperty(nodeId)) {
+      updateArray.push(nodes[nodeId]);
+    }
+  }
+  nodesDataset.update(updateArray);
+};
+
 const neighbourhoodHighlight = (params) => {
-
   allNodes = nodesDataset.get({ returnType: "Object" });
-
   if (params.nodes.length > 0) {
     highlightActive = true;
     let i, j;
     const selectedNode = params.nodes[0];
     const degrees = 2;
 
-    for (let nodeId in allNodes) {
-      allNodes[nodeId].color = otherNodeColor;
-      allNodes[nodeId].label = ' ';
-    }
+    changeNodesObjectColor(allNodes, otherNodeColor);
+
     const connectedNodes = network.getConnectedNodes(selectedNode);
     let allConnectedNodes = [];
 
@@ -130,43 +152,56 @@ const neighbourhoodHighlight = (params) => {
       }
     }
 
-    for (i = 0; i < allConnectedNodes.length; i++) {
-      const index = allConnectedNodes[i];
-      allNodes[index].color = secondDegreeNodeColor;
-      allNodes[index].label = labels[index];
-    }
+    // change second degree nodes color
+    changeNodeColor(allConnectedNodes, secondDegreeNodeColor);
 
-    for (i = 0; i < connectedNodes.length; i++) {
-      const index = connectedNodes[i];
-      allNodes[index].color = firstDegreeNodeColor;
-      allNodes[index].label = labels[index];
-    }
+    // change first degree nodes color
+    changeNodeColor(connectedNodes, firstDegreeNodeColor);
 
+    // change selected nodes color
     allNodes[selectedNode].color = selectedNodeColor;
     allNodes[selectedNode].label = labels[selectedNode];
+
   } else if (highlightActive === true) {
-    for (let nodeId in allNodes) {
-      allNodes[nodeId].color = firstDegreeNodeColor;
-      allNodes[nodeId].label = labels[nodeId];
-    }
+    // set default node color
+    changeNodesObjectColor(allNodes, firstDegreeNodeColor, labels);
     highlightActive = false;
   }
 
-  const updateArray = [];
-  for (nodeId in allNodes) {
-    if (allNodes.hasOwnProperty(nodeId)) {
-      updateArray.push(allNodes[nodeId]);
-    }
-  }
-  nodesDataset.update(updateArray);
+  redrawNodes(allNodes);
+
 };
 
+// open SEP entry
 const openLink = (params) => {
   if (params.nodes.length > 0) {
     const nodes = nodesDataset.get({ returnType: "Object" });
     const selectedNode = params.nodes[0];
     window.open(`${baseUrl}${nodes[selectedNode].url}`);
   }
+};
+
+// search nodes which contains input text
+const searchNode = (text) => {
+  const lowerText = text.toLowerCase();
+  const hitNodes = nodes
+    .filter((n) => n.label.toLowerCase().indexOf(lowerText) !== -1)
+    .map((n) => n.id);
+  if (hitNodes.length <= 0) {
+    alert("There are no results.");
+    return;
+  }
+  allNodes = nodesDataset.get({ returnType: "Object" });
+  changeNodesObjectColor(allNodes, otherNodeColor);
+  changeNodeColor(hitNodes, firstDegreeNodeColor);
+  highlightActive = true;
+  redrawNodes(allNodes);
+};
+
+// search button clicked
+document.getElementById("search-button").onclick = function() {
+  const text = document.getElementById("search-text").value;
+  searchNode(text.toLowerCase());
 };
 
 redrawAll();
