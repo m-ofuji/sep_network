@@ -1,6 +1,6 @@
 # sep_network
 
-This is a network graph of Stanford Encycropedia of Pholosophy.
+This is a network graph of Stanford Encyclopedia of Philosophy.
 
 You can see network graph here.
 
