@@ -1,17 +1,20 @@
 # sep_network
 
-This is a network graph of Stanford Encyclopedia of Philosophy.
+### ○URL：<https://sep-network.razor.jp/>
 
-You can see network graph here.
-
-https://sep-network.razor.jp/
+### ○Overview
+This is a network graph of the Stanford Encyclopedia of Philosophy.
 
 The more links an entry has, the larger the node which represents the entry becomes.
 
-If you click a node, the nodes which is linked to it is emphasized.
+If you click a node, the nodes are linked to it are emphasized.
 
-You can jump to an entry by double clicking a node.
+You can jump to an entry by double-clicking a node.
 
-Scraping folder contains codes which scrape data from SEP and make topology of graph.
+### ○Motivation
 
-Visjs folder contains files(html and JS) which show the result.
+・To visualize the relationship of each article
+
+・To Learn the basic syntax of Python
+
+・To learn web scraping
